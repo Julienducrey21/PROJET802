@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
+#include <math.h>
 using namespace std;
 
 struct Droite{
