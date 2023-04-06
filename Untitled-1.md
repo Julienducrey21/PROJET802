@@ -16,17 +16,12 @@
       <tr>
       </tr>
       <tr>
-         <td align="center">Alexandre SCHAMBACHER</td>
+         <td align="center">Khadim DIOUME</td>
       </tr>
       <tr>
       </tr>
       <tr>
-         <td align="center">Aurelien PARDO</td>
-      </tr>
-      <tr>
-      </tr>
-      <tr>
-         <td align="center">Semen KORZH</td>
+         <td align="center">Julien DUCREY</td>
       </tr>
    </tbody>
 </table>
@@ -70,534 +65,165 @@
 <br></br>
 <br></br>
 
-# Objectif: <a name="objectif"></a> [↩](#tableau-du-contenu)
+Partie 1 : Pour la transformée de Hough en espace paramétrique (m,p) :
 
-<br></br>
+2 Méthodes membres : 
 
-Supposons que la position d'un pixel peut s'écrire sous forme des coordonnées *(x,y)* entiers.  
+***Tracer MP :***
 
-Le but de ce projet est d'écrire un programme dans C++ permettant de détecter des droites (segments) sur une image .ppm (et le compiler avec g++) en utilisant:
-<br></br>
-- **Transformé de Hough dans l'espace des paramètres (m,p)** avec m - un coefficient directeur et p - une constante sur l'ordonnée (x=0) entre deux points:
+La méthode **tracerMP** trace une droite **y = mx + p** dans une image et enregistre cette image dans un fichier.
 
-*y = m⋅ x + p avec m,p - des réels*
+La méthode **tracerMP** pour la classe Droite. 
 
-- **Transformé de Hough dans l'espace des paramètres (r,θ)** qui est un transformé de (m,p) en coordonnées polaires:
+Cette méthode prend en entrée les paramètres suivants :
 
-*r = x⋅ cosθ + y⋅ sinθ avec θ ∈ [0, 2π[ et r-un réel*
+- m et p : des constantes décrivant l'équation d'une droite y = mx + p.
+- hauteur et largeur : des entiers définissant les dimensions de l'image à générer.
+- maxColor : un entier définissant la valeur maximale de chaque canal de couleur RGB pour les pixels de l'image (par exemple, 255 pour une image en couleurs 24 bits).
+- FILENAME : une chaîne de caractères contenant le nom du fichier de sortie.
 
-- **Choix des meilleures droites (segments)** par suppression des doublons...  
+La méthode **tracerMP** crée un objet de type ofstream pour écrire dans le fichier FILENAME en mode écriture. Elle écrit ensuite l'entête du fichier PPM dans le fichier, qui contient des informations sur les dimensions de l'image et la valeur maximale des canaux de couleur.
 
-De plus, il fallait créer une manière à *dessiner des droites (segments)* avec des coefficients (m,p) pour tester le fonctionnement de la détection programmée.
-<br></br>
+Ensuite, la méthode parcourt chaque pixel de l'image et calcule la valeur de y pour la droite en fonction de la valeur de x. Elle calcule également la distance entre le pixel et la droite en utilisant la formule de la distance d'un point à une droite. Cette distance permet de déterminer si le point est proche de la droite ou non, ce qui permet de décider quelle couleur lui attribuer.
 
-# Plan de réalisation: <a name="plan-de-réalisation"></a> [↩](#tableau-du-contenu)
-On a divisé le projet en 3 modules à réaliser: *un module de la lecture d'un fichier .ppm*,*un module de la détection des droites sur une image (.ppm)* et *un module du dessin d'une droite sur une image (.ppm)*.  
-Chaque module consiste des fichiers .cpp et .hpp et soit référencé dans un fichier d'exécution *main.cpp*
+Si le point est proche de la droite, la méthode colore le pixel en rouge. Si le point est légèrement éloigné de la droite, elle partage la couleur du pixel avec ses voisins pour un effet d'anti-aliasing. Si le point est loin de la droite, la méthode colore le pixel en blanc. 
 
-<br></br>
-## Module de la lecture d'un fichier .ppm <a name="module-lecture"></a>
-<br></br>
+Notons que l’ordonnée à l’origine sera située au coin en haut à gauche de l’image. L’axe des ordonnées va vers la droite et l’axe des abscisses vers le bas. 
 
-Nous travaillons sur des fichiers graphiques du format .ppm - le **portable pixmap file**<a href="#ft-ppm" name="_ppm"><sup>1</sup></a>. Ce type de fichier est surtout utilisé pour convertir les fichiers du type pixmap entre différentes plateformes - donc pour échange.  
 
+***transformeeHoughMP :***
 
-Un .ppm est composée sur la base suivante (dont aucune ligne ne doit dépasser 70 caractères):  
-<br></br>
+On lit notre image au format PPM depuis un fichier, la méthode parcourt chaque pixel de l'image pour détecter les pixels appartenant à une droite y=mx+p. Pour chaque point considérer comme appartenant à la droite, on accumule un certain score, dans un buffer d'accumulation, pour les cases du buffer, suffisamment proche d’une droite. Cette droite de l’espace (m,p), correspond à la transformée de Hough, du point repérer comme appartenant à la droite, dans l’image, soit l’espace (x,y).
 
-$${\color{blue}Format}$$  
+Le résultat est un vecteur de valeurs représentant le nombre d'occurrences de chaque combinaison (m,p) de la droite dans le buffer d'accumulation.
 
-- Le numéro de variante (à 2 octets): le type de format (PBM,PGN, *PPM*) et la variante (binaire ou *ASCII*). Dans notre cas c'est *P3*. 
+Détail du code :
 
-* ${\color{gray} Un  \space caractère \space d'espacement \space ( espace, \space tabulation \space ou \space comme \space dans \space notre \space cas \space}$  ${\textcolor{gray}{\textbf{une nouvelle ligne}}}$ ${\color{gray} \space entre  \space chaque \space composante \space sauf \space}$ ${\color{gray} pour \space}$ ${\color{gray} la \space hauteur \space et \space la  \space largeur)}$
-<br></br>
+- Ouvre le fichier image.ppm contenant l'image.
+- Lit les informations relatives à l'image depuis l'entête du fichier PPM (format, dimensions, nombre de couleurs).
+- Crée des vecteurs disc\_M et disc\_P représentant les valeurs discrètes de m et p pour la discrétisation de l'espace Hough.
+- Initialise un buffer d'accumulation de la transformée de Hough avec des zéros pour chaque cellule.
+- Parcours chaque pixel de l'image.
+- Pour chaque pixel, vérifie si la couleur du pixel correspond à celle de la droite y=mx+p (r>192, b=0, g=0).
+- Si la couleur détectée est suffisamment rouge(r>192), appelle une fonction **incrementeMP** qui incrémente les cellules appropriées du buffer d'accumulation.
+- Ferme le fichier.
+- Récupère le score maximal obtenu dans le buffer.
+- Récupère les coordonnées de toutes les cases ayant obtenues ce score maximal.
+- Appelle la fonction **trouve\_barycentre** afin d’obtenir les coordonnées du barycentre sub-pixel du buffer.
+- Affiche le résultat de la méthode et le buffer accumulé pour vérification des résultats et du bon fonctionnement de la méthode.
+- Retourne le vecteur des valeurs de discrétisation des paramètres (m,p) pour les coordonnées correspondants à cette case (i ème ligne donne i ème coefficient de disc\_M et j ème colonne donne le j ème coefficient de disc\_P)
 
-$${\color{blue}Largeur \space et \space hauteur}$$  
+1 méthode spécifique :
 
-- La largeur de l'image en nombre de pixels  
-+  _Un caractère d'espacement ( **espace** !) entre largeur et hauteur)_  
-- La hauteur de l'image en nombre de pixels  
-  * Par exemple, `30 30`  
-  
-- ${\color{gray}Une  \space nouvelle \space ligne}$  
-<br></br>
+***IncrementeMP :***
 
-$${\color{blue}Valeur \space maximale}$$  
+Notre méthode incrémente prend en entrée un buffer, les coordonnées d'un pixel (x,y), ainsi que des informations sur la largeur, la hauteur et la discrétisation de la droite (disc\_M et disc\_P). 
 
-- la valeur maximale inférieure à 65536 (dans notre cas *255*) qui a impacte sur la couleur d'un pixel :point_down:
+Pour chaque ligne du buffer, notre fonction calcule la distance entre chaque case du buffer et la droite définie par le pixel (x,y), de coefficient directeur -x et d’ordonnée à l’origine y, et incrémente le buffer aux indices correspondants en fonction de cette distance. Les incréments sont effectués de manière graduée, avec une incrémentation plus importante pour les pixels les plus proches de la droite.
 
-- ${\color{gray}Une  \space nouvelle \space ligne}$  
-<br></br>
+La fonction retourne le buffer mis à jour.
 
-$${\color{blue} Données \space de \space l'image:}$$  
+Détail du code : 
 
-``` 
-255
-255
-255
-255
-255
-255
-...
-```
-L'image est codée ( en caractères ASCII ) en succession des valeurs associées à chaque pixel :  ligne par ligne en partant du haut et du gauche à droite.
-Chaque triplet correspond à la couleur d'un pixel en RVG (RGB en anglais), c.à.d. `255,255,255` est un pixel blanc :white_medium_square: et `0,0,0` est un pixel noir :black_medium_square:
+La fonction parcourt chaque élément du buffer en utilisant deux boucles for imbriquées pour parcourir les indices i et j. Pour chaque élément, elle calcule la distance d entre le pixel (i,j) et la droite p= -mx + y. Si cette distance est inférieure à 0.5, la case correspondante du buffer est incrémentée de 1. Si la distance est comprise entre 0.5 et 1.0, l'incrément est de 0.5, et si la distance est comprise entre 1.0 et 1.5, l'incrément est de 0.1. Les pixels dont la distance est supérieure à 1.5 ne contribuent pas à l'accumulation. 
 
-> __Note__
->Il existe des lignes qui commencent par **'#'** - ce sont des commentaires qui sont ignorés par les logiciels d'affichage (ie Gimp, Krita, etc) mais auxquelles la limite de 70 charactères par ligne est imposée.
 
-<br></br>
-Dans l'ensemble nous avons un fichier comme ci-dessous:
 
-```
-P3
-# resolution 
-30 30
-# avec 255 comme val max
-255
-# debut de l image
-255
-255
-255
-255
-255
-255
-...
-```
+Partie 2 : Pour la transformée de Hough en espace paramétrique (r,théta) :
 
-<br></br>
-## Module de la détection des droites sur une image (.ppm) <a name="module-detection"></a>
-<br></br>
-Ce module est destiné à la detection des droites avec les transformations de Hough et, ensuite, la suppression des doublons.
-<br></br>  
-$${\color{blue}Principe \space de \space détection \space des \space droites \space potentielles \space avec \space 2 \space points \space (coordonnées \space des \space pixels)}$$  
 
-Au premier temps, on veut savoit tout les droites possible. Par définition, une droite(segment) relie au moins 2 points.
-Pour une droite de pente m et de constante à l'ordonnée p, et points A et B on calcule:
+2 Méthodes membres : 
 
-$\ avec \space A \space = \space \left( x_{a} \space , y_{a} \right) \space et \space B \space = \space \left( x_{b} \space , y_{b} \right) \$
+***TracerRTheta :***
 
-$\ m =  \frac{y_{b}-y_{a}}{x_{b}-x_{a}} \$
+La méthode crée une image en format PPM représentant une droite dans un plan cartésien. La droite est représentée en coordonnées polaires avec les paramètres r et theta. 
 
-$\ p = y_{a} - m * x_{a}  = y_{a} - \frac{y_{b}-y_{a}}{x_{b}-x_{a}} * x_{a} \$
+La fonction prend en entrée les dimensions de l'image (hauteur et largeur), la valeur maximale de couleur (maxColor), le nom du fichier de sortie (FILENAME) et les paramètres polaires de la droite (r et theta).
 
+Elle suit le même mode de fonctionnement que tracerRTheta, on change seulement l’équation de la droite, qui est maintenant en coordonnées polaires, pour la calcul de la distance.
 
-Donc, on va réunir chaque point(pixel) avec les autres. Et, avec chaque point parcouru, le nombre des liaisons à faire va diminuer car il faut éviter des répétitions.
+Détail du code :
 
-C'est-à-dire, si on a *n* points(pixels) à relier par des droites, alors nous aurions $\frac{(n-1)n}{2}\$ droites potentielles comme résultat.
+Le parcours des pixels de l'image est effectué dans une boucle imbriquée for, et pour chaque pixel, on calcule sa projection sur la droite représentée par r et theta en coordonnées polaires. La distance entre ce point et la droite est ensuite calculée et utilisée pour déterminer la couleur à attribuer au pixel. 
 
-$$\ Démonstration: n+(n-1)+(n-2)+...+1+0 = n^{2} - \sum_{i=0}^n i\ = n^{2} -\frac{n(n+1)}{2} = \frac{n^{2}-n}{2} = \frac{(n-1)n}{2} \$$
+Si cette distance est inférieure ou égale à 0.5, le pixel est colorié en rouge. Si la distance est comprise entre 0.5 et 1, la couleur rouge est atténuée en fonction de la distance. Les pixels dont la distance est supérieure à 1 sont coloriés en blanc.
 
-...
-<br></br>
+Le fichier image de sortie est créé en écrivant l'entête du fichier PPM et en écrivant les valeurs de couleur de chaque pixel de l'image dans le fichier.
 
-<div align="center">
-  
-<img src="./images/hough_points.gif"  width="95%" height="95%">
+***TransformeeHoughRTheta :***
 
-</div>
-<div align="center" > <strong>Une démonstration de l'algorithme de la détection des droites </strong> <a href="#myft1" name="a1"><sup>3</sup></a> </div>
 
+La méthode implémente la transformation de Hough pour détecter les droites présentes dans une image. 
 
-<br></br>
-## Module du dessin d'une droite sur une image (.ppm) <a name="module-dessin"></a>
-<br></br>
+Plus précisément, il effectue la transformée de Hough dans l'espace paramétrique (r,theta) pour détecter les droites qui passent par des points blancs de l'image.
 
-
-<br></br>
-# Travail réalisé: <a name="travail-réalisé"></a> [↩](#tableau-du-contenu)
-<br></br>
-
-**31/03/2023** - un module "lecture" ( lecture.cpp, lecture.hpp ) pour interpréter un fichier .ppm avec C++ et l'exploiter
-
-<br></br>
-
-# Exploitation du code: <a name="exploitation-du-code"></a> [↩](#tableau-du-contenu)
-Le code est à exécuter avec console Ubuntu (dans Visual Studio Code) et le compilateur g++ pour une version 14 de C++:
-
-```PowerShell
-g++ -Wall -o test -std=c++14 main.cpp lecture.cpp detection.cpp dessin.cpp
-
-./test
-````
-
-<br></br>
-
-## Lecture des fichiers .ppm: <a name="lecture-des-fichiers"></a>
-Le code destiné à réaliser une lecture et obtention des données utiles d'un fichier (.ppm)
-<br></br>
-
-### lecture.hpp qui relie lecture.cpp - des fonctions - et main.cpp - espace d'exécution: <a name="lecture.hpp"></a>
-<br></br>
-
-*Des bibliothèques utilisées:*
-
-```c++
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream> //getline avec delimiteur
-```
-<br></br>
-*Prototypes des fonctions:*
-<br></br>
-```c++
-std::vector<std::string> slicing(std::vector<std::string>& arr, int X, int Y);
-```
-Une fonction qui retourne un sous-vecteur coupé depuis le vecteur d'entrée.
-<br></br>
-<br></br>
-
-```c++
-std::vector<std::string> file_to_vector(std::string nomFichier);
-```
-Une fonction qui converti un fichier .ppm en un vecteur des strings en prenant chaque nouvelle ligne comme le séparateur. 
-<br></br>
-<br></br>
-
-```c++
-std::string standard(std::string nomFichier);
-```
-Une fonction qui retourne le format d'un .ppm; ie P3 dans notre cas. 
-<br></br>
-<br></br>
-
-```c++
-int largeur(std::string nomFichier);
-```
-Une fonction qui retourne le largeur de l'image 
-<br></br>
-<br></br>
-
-```c++
-int hauteur(std::string nomFichier);
-```
-Une fonction qui retourne la hauteur de l'image
-<br></br>
-<br></br>
-
-```c++
-int max_value(std::string nomFichier);
-```
-Une fonction qui retourne la valeur maximale de la couleur des pixels
-<br></br>
-<br></br>
-
-```c++
-std::vector<int> image(std::string nomFichier);
-```
-Une fonction qui retourne un vecteur des valeurs entières des couleurs des pixels
-<br></br>
-<br></br>
-### lecture.cpp - des fonctions qui interprètent un fichier .ppm en données exploitables: <a name="lecture.cpp"></a>
-<br></br>
-D'après ce que nous avons vu dans [Module de la lecture d'un fichier .ppm](#module-lecture) on peut déduire les positions (sans commentaires en *'#'* !) de *format*, *hauteur*, *largeur*, *valeur maximal*, *couleurs des pixel* :
-
-| variable à extraire| sa position dans <br/> un fichier sans commentaires | type du variable dans C++ |
-| :---: | :---: | :---: |
-| format | 0 | `string` |
-| hauteur | 1 (1) | `int` |
-| largeur | 1 (0) | `int` |
-| max_value | 2 | `int` |
-| image | de 3 jusqu'à la fin | `vector<int>` |
-
-<br></br>
-
-* **std::vector\<std::string\>** *slicing*(**std::vector\<std::string\>**& arr, **int** X, **int** Y):
-  
-  > **Entrée**: un vecteur *arr* des chaînes de caractères à couper, un entier *X* - 1ère position et un entier *Y* - dernière position
-  
-  > **Fonction:** <br></br>
-  > on crée des valeurs *start* et *end* avec arr.begin(), X et Y - des valeurs du type spécifique des position du début et fin dans le vecteur arr <br></br>
-  > on crée un containeur *result* pour notre sous-vecteur (des chaînes de caractères) de taille Y-X+1 (un nombre des éléments  souhaité) <br></br>
-  > on copie des valeurs de arr dans result avec copy(start, end, result.begin()) <br></br>
-  
-  > **Sortie**: un sous-vecteur *result* de arr de la position X à la position Y
-  
-```c++
-// fonction depuis le site: https://www.geeksforgeeks.org/slicing-a-vector-in-c/
-{
-    auto start = arr.begin() + X;
-    auto end = arr.begin() + Y + 1;
-
-    std::vector<std::string> result(Y-X+1);
-
-    copy(start, end, result.begin());
-
-    return result;
-}
-
-```  
-<br></br>
-* **std::vector\<std::string\>** *file_to_vector*(**std::string** nomFichier): 
-
-  > **Entrée**: une chaînes de caractères *nomFichier* - nom du fichier sous forme "nom.ppm" à convertir en vecteur de données
-  
-  > **Fonction:** <br></br>
-
-  > créons un containeur temporaire *line* pour chaînes de caractères<br></br>
-  > créons un vecteur des chaînes de caractères - *arr* <br></br>
-  > on ouvre le fichier du nom <br></br>
-  > **si le fichier est ouvert**, on copie temporairement dans *line* des chaînes de caractères ligne par ligne sauf des commentaires (commençants avec '#') <br></br>
-  > on insert à la fin de *arr*, des chaînes de caractères de *line* avec .push_back() <br></br>
-  > **sinon** on affiche une erreur "Pas lisible" <br></br>
-  > **fin de la boucle si**<br></br>
-  
-  > **Sortie**: un vecteur *arr* (en chaînes de caractères) des données du fichier
-
-```c++
-{
-    std::vector<std::string> arr;
-    std::string line;
-
-    std::ifstream mFile (nomFichier); //ouverture du fichier
-
-    if(mFile.is_open()){
-        while(!mFile.eof()){
-            getline(mFile, line);
-            
-            if(line[0]!='#'){ //si c'est pas un commentaire
-                arr.push_back(line); //obtentions des données en string
-            }
-        }
-    }else{
-        std::cout<<"Pas lisible";
-    }
-
-    return arr;
-}
-
-```
-<br></br>
-
-* **std::string** *standard*(**std::string** nomFichier):
-
-  > **Entrée**: une chaînes de caractères *nomFichier* - nom du fichier sous forme "nom.ppm" à lire
-  
-  > **Fonction:** <br></br>
-
-  > créons un vecteur *arr* des données du fichier avec *file_to_vector*(**std::string** nomFichier) <br></br>
-  > créons un containeur *type* pour chaînes de caractères <br></br>
-  > on met la première valeur de arr dans type <br></br>
-  
-  > **Sortie**: une chaîne de caractères *type* du format du fichier, ie 'P3'
-
-```c++
-{
-    std::vector<std::string> arr = file_to_vector(nomFichier);
-
-    //donne le standard d'un PPM (ie P3 ou autre)
-
-    std::string type;
-    type = arr[0];
-    
-    return type;
-}
-
-```
-<br></br>
-* **int** *largeur*(**std::string** nomFichier):  
-
-  > **Entrée**: une chaînes de caractères *nomFichier* - nom du fichier sous forme "nom.ppm" à lire
-  
-  > **Fonction:** <br></br>
-
-  > créons un vecteur *arr* des données du fichier avec *file_to_vector*(**std::string** nomFichier) <br></br>
-  > créons une chaînes de caractères *dimensions* <br></br>
-  > créons une chaînes de caractères *temp_dim* <br></br>
-  > en utilisant *stringstream*, on met la deuxième valeur *dimensions* de arr dans *dims* <br></br>
-  > créons un containeur temporaire *s* pour chaînes de caractères <br></br>
-  > **tant qu'il y a des séparateurs espaces (' '):** on met s contenant une chaîne de caractères entre séparateurs comme une valeur dans *temp_dims* avec *.push_back()* <br></br>
-  > **fin de la boucle tant que**<br></br>
-  > on définit un entier *largeur* égal à la première case de temp_dim converti en entier avec *stoi()* <br></br>
-  
-  > **Sortie**: un entier *largeur* de l'image
-
-
-```c++
-{
-    std::vector<std::string> arr = file_to_vector(nomFichier);
-
-    //// dimensions de l'image:
-
-    std::string dimensions = arr[1]; // dans ordre: largeur, hauteur
-    
-    std::vector<std::string> temp_dim;
-
-    std::stringstream dims(dimensions);
-    std::string s;
-
-    while (getline(dims,s,' ')){
-        temp_dim.push_back(s);
-    }
-
-    //stoi convertis string en entier mais en peu "nulle" pour large opérations
-
-    int largeur = stoi(temp_dim[0]);
-    
-    return largeur;
-}
-
-```
-<br></br>
-* **int** *hauteur*(**std::string** nomFichier): 
-
-  > **Entrée**: une chaînes de caractères *nomFichier* - nom du fichier sous forme "nom.ppm" à lire
-  
-  > **Fonction:** <br></br>
-
-  > créons un vecteur *arr* des données du fichier avec *file_to_vector*(**std::string** nomFichier) <br></br>
-  > créons une chaînes de caractères *dimensions* <br></br>
-  > créons une chaînes de caractères *temp_dim* <br></br>
-  > en utilisant *stringstream*, on met la deuxième valeur *dimensions* de arr dans *dims* <br></br>
-  > créons un containeur temporaire *s* pour chaînes de caractères <br></br>
-  > **tant qu'il y a des séparateurs espaces (' '):** on met s contenant une chaîne de caractères entre séparateurs comme une valeur dans *temp_dims* avec *.push_back()* <br></br>
-  > **fin de la boucle tant que**<br></br>
-  > on définit un entier *hauteur* égal à la deuxième case de temp_dim converti en entier avec *stoi()* <br></br>
-  
-  > **Sortie**: un entier *hauteur* de l'image
-
-
-
-```c++
-{    
-    std::vector<std::string> arr = file_to_vector(nomFichier);
-
-    //// dimensions de l'image:
-
-    std::string dimensions = arr[1]; // dans ordre: largeur, hauteur
-    
-    std::vector<std::string> temp_dim;
-
-    std::stringstream dims(dimensions);
-    std::string s;
-
-    while (getline(dims,s,' ')){
-        temp_dim.push_back(s);
-    }
-
-    //stoi convertis string en entier mais en peu "nulle" pour large opérations
-
-    int hauteur = stoi(temp_dim[1]);
-
-    return hauteur;
-}
-
-```
-<br></br>
-* **int** *max_value*(**std::string** nomFichier):
-
-
-  > **Entrée**: une chaînes de caractères *nomFichier* - nom du fichier sous forme "nom.ppm" à lire
-  
-  > **Fonction:** <br></br>
-
-  > créons un vecteur *arr* des données du fichier avec *file_to_vector*(**std::string** nomFichier) <br></br>
-  
-  > **Sortie**: un entier définit par 3ème case de arr converti en entier avec *stoi()*, correspondant à la valeur maximale permit du couleur des pixels
-
-```c++
-{
-    std::vector<std::string> arr = file_to_vector(nomFichier);
-    return stoi(arr[2]);
-}
-```
-<br></br>
-* **std::vector\<int\>** *image*(**std::string** nomFichier)*
-
-  > **Entrée**: une chaînes de caractères *nomFichier* - nom du fichier sous forme "nom.ppm" à lire
-  
-  > **Fonction:** <br></br>
-
-  > créons un vecteur *arr* des données du fichier avec *file_to_vector*(**std::string** nomFichier) <br></br>
-  > créons des entiers *X*, *Y* correspondant au début et à la fin des données des couleurs des pixels dans arr
-  > créons un sous-vecteur *str_couleurs* en chaînes de caractères et en mettons des données des couleurs des pixels avec *slicing(arr,X,Y)* <br></br>
-  > créons un vecteur des entiers *couleurs* <br></br>
-  > créons un entier *len* correspondant à la longueur de *str_couleurs* <br></br>
-  > **pour un entier j allant de 0 à len sans sa reste de divison par 3 _(en assurrant qu'un triple par pixel de valeurs RGV est respecté)_:** on crée un containeur temporaire *strm* en stringstream d'une valeur de *str_couleurs* en position j. <br></br>
-  > Ensuite, on va créer un entier *temp*. <br></br>
-  > Pour la conversion en entiers on va forcer une chaîne de caractères *fluide* de *strm* dans *temp*. <br></br>
-  > En plus, des valeurs vides vont être convertis en 0. Donc s'il manque des couleurs pour un pixel, la fonction le remplace par un pixel noir. <br></br>
-  > On rajoute l'entier de conversion à la fin du vecteur *couleurs* avec *.push_back()* <br></br>
-  > **fin de la boucle pour**<br></br>
- 
-  > **Sortie**: un vecteur des entiers *couleurs* des valeurs des couleurs de l'image
-
-
-```c++
-
-    std::vector<std::string> arr = file_to_vector(nomFichier);
-
-    //// Image:
-
-    int X = 3; //debut image
-    int Y = arr.size(); //fin image
-    
-    std::vector<std::string> str_couleurs;
-    str_couleurs = slicing(arr,X,Y);
-
-
-    //conversion en int avec remplacement des données corrumpues:
-    std::vector<int> couleurs;
-    int len = str_couleurs.size();
-
-    for(int j=0; j < len - len % 3; j++){ //éviter le '' à la fin avec modulo
-
-        std::stringstream strm(str_couleurs[j]);
-
-        int temp;
-        strm >> temp;
-        
-        couleurs.push_back(temp);
-
-        }
-
-    return couleurs;
-}
-
-```
-<br></br>
- 
-## Détection des droites sur l'image: <a name="detection-droites"></a>
-
-<br></br>
- 
-*Des bibliothèques utilisées:*
-
-```c++
-#include <iostream>
-...
-
-```
-
-<br></br>
- 
-## Dessin des droites  sur l'image: <a name="dessin-droites"></a>
-
-<br></br>
- 
-*Des bibliothèques utilisées:*
-
-```c++
-#include <iostream>
-...
- 
-```
-
-<br></br>
- 
-## Test du code dans main.cpp: <a name="test"></a>
-
-<br></br>
-
- 
-<br></br>
-# Bibliographie <a name="sources"></a> [↩](#tableau-du-contenu)
-<br></br>
-
-###### <b name="ft-ppm">1</b>:  <a href="https://fr.wikipedia.org/wiki/Portable_pixmap">Portable Pixmap sur Wikipédia</a>[↩](#_ppm)
-
-
-###### <b name="myft1">3</b>:  <a href="https://homepages.inf.ed.ac.uk/amos/hough.html">Hough Transform par Amos Storkey</a>[↩](#a1)
- 
+Détail du code : 
+
+- Le code lit une image au format .ppm et récupère les dimensions de l'image à partir du fichier. Il utilise ensuite deux tableaux disc\_R et disc\_Theta pour discrétiser l'espace paramétrique r-theta. Le tableau disc\_R contient les valeurs discrètes de r, et disc\_Theta contient les valeurs discrètes de thêta.
+- Il parcourt ensuite tous les pixels de l'image et incrémente le buffer d'accumulation pour chaque pixel considéré comme suffisamment rouge. 
+- La fonction **incrementeRTheta** est appelée pour chaque pixel blanc, et cette fonction incrémente les cases correspondantes du tableau d'accumulation en utilisant les valeurs de r et de theta calculées pour le pixel courant.
+- Parcourt le tableau d'accumulation pour trouver les coordonnées des cases ayant la valeur maximale. Ces coordonnées correspondent aux paramètres r et theta des droites détectées par la transformée de Hough, dans les vecteurs disc\_R et disc\_Theta.
+- Le résultat est stocké dans un vecteur de vecteurs de doubles resultat, qui contient les coordonnées (i, j) de toutes les cases ayant le score maximal. Chaque élément du vecteur "resultat" correspond aux coordonnées r-theta d'une droite détectée.
+- On calcule le barycentre de tous ces points et on affiche les coordonnées du point trouvé, ainsi que les valeurs en (r,theta) correspondantes et les valeurs en (m,p) correspondantes.
+- On affiche le buffer accumulé, pour vérifier les résultats, ainsi que le bon fonctionnement des méthodes.
+
+
+
+3 méthodes spécifiques :
+
+***IncrementeRTheta :***
+
+La méthode incrémente prend en entrée un buffer (un tableau à deux dimensions), les coordonnées (x,y) d'un pixel, des paramètres de discrétisation (n\_valR, n\_valTheta, disc\_R, disc\_Theta) et la taille de la droite (R). 
+
+Elle calcule la distance entre la droite définit par le pixel (x,y) et tous les couples (r,theta) de paramètres possibles, par leur discrétisation. Si la distance est inférieure à une certaine valeur dépendante de R et de la discrétisation, alors la case correspondante du buffer est incrémentée, d’une certaine valeur dépendant du degré du de proximité, par rapport à la droite.
+
+Cette méthode est utilisée pour incrémenter le buffer avec les droites correspondant aux pixels, repéré comme appartenant à la droite dans l’image .ppm, en utilisant la transformée de Hough.
+
+
+***Vers\_MP :***
+
+La méthode prend deux doubles en entrée, r et theta, qui représentent respectivement la distance entre l'origine et la droite dans le système de coordonnées polaires, et l'angle entre la droite et l'axe des x. La fonction retourne un vecteur de deux doubles, m et p, qui représentent respectivement la pente et l'ordonnée à l'origine de la droite dans le système de coordonnées cartésiennes.
+
+Pour obtenir m et p, la méhode utilise les relations suivantes :
+
+la pente m est égale à : -cos(theta) / sin(theta).
+
+l'ordonnée à l'origine p est égale à : r / sin(theta).
+
+Ces formules sont déduites de l'équation de la droite y = mx + p dans le système de coordonnées cartésiennes, et de la conversion entre les coordonnées polaires et cartésiennes.
+
+***Vers\_polaire :***
+
+La méthode prend en entrée deux nombres réels m et p correspondant respectivement aux coefficients directeurs et à l'ordonnée à l'origine d'une droite de l'espace cartésien et retourne un vecteur contenant deux nombres réels correspondant aux coordonnées polaires de cette droite, à savoir la distance r de la droite à l'origine et l'angle theta entre la droite et l'axe des abscisses.
+
+Détail du code : 
+
+La méthode calcule d'abord la distance r à partir de m et p en utilisant la formule r = abs(p) / sqrt(1 + m \* m), puis calcule l'angle theta à partir de m, et enfin retourne un vecteur contenant r et theta.
+
+***Affiche\_buffer :***
+
+Cette fonction affiche le buffer donnée en paramètre, coefficient par coefficient, à l’aide de double for, itérant chacune sur une de ses dimensions.
+
+Partie 3 : Pour trouver la meilleure approximation, s’il y a plusieurs cases du buffer, qui sont de score maximal
+
+***Trouve\_barycentre :*** 
+
+Notre fonction prend en entrée un tableau de deux dimensions d'entiers, où chaque sous-tableau contient deux éléments représentant les coordonnées x et y d'un point. Il calcule ensuite les coordonnées du barycentre des points du tableau.
+
+Le barycentre est calculé en effectuant une moyenne pondérée des coordonnées x et y des points. Pour chaque coordonnée, la moyenne pondérée est calculée en divisant la somme des coordonnées de tous les points par le nombre total de points dans le tableau. On choisit de mettre le même poids, pour chacun des points, on fait donc la moyenne des coordonnées de tous les points de la liste.
+
+Le résultat est retourné sous forme d'un vecteur contenant les coordonnées x et y du barycentre.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
