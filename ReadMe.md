@@ -46,24 +46,13 @@
 
 - [Objectif](#objectif)
 - [Plan de réalisation](#plan-de-réalisation)
-  * [Module de la lecture d'un fichier .ppm](#module-lecture)
-  * [Module de la détection des droites sur une image (.ppm)](#module-detection)
-  * [Module du dessin d'une droite sur une image (.ppm)](#module-dessin)
+  * [I)Transformation de Hough en espace de paramètres (m,p):](#module-lecture)
+  * [II)Transformation de Hough en espace de paramètres (r,theta):](#module-detection)
+  * [III)Recherche des paramètres de la meilleur droite d'approximation](#module-dessin)
 - [Travail réalisé](#travail-réalisé)
-- [Exploitation du code](#exploitation-du-code)
-  * [Lecture des fichiers .ppm](#lecture-des-fichiers)
-    + [lecture.hpp qui relie lecture.cpp - des fonctions - et main.cpp - espace d'exécution](#lecture.hpp)
-    + [lecture.cpp - des fonctions qui interprètent un fichier .ppm en données exploitables](#lecture.cpp)
-  * [Détection des droites sur l'image](#detection-droites)
-
-  * [Dessin des droites  sur l'image](#dessin-droites)
-    
-  * [Test du code dans main.cpp](#test)
-
-- [Bibliographie](#sources)
-
-<br></br>
-<br></br>
+  * [I)Transformation de Hough en espace de paramètres (m,p):](#module-lecture)
+  * [II)Transformation de Hough en espace de paramètres (r,theta):](#module-detection)
+  * [III)Recherche des paramètres de la meilleur droite d'approximation](#module-dessin)
 
 Partie 1 : Pour la transformée de Hough en espace paramétrique (m,p) :
 
