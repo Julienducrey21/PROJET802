@@ -5,9 +5,6 @@
 # **Projet C++/** *Image : Segments* <a name="projet_intro"></a>
 
 <br></br>
- 
-[![Projet](https://img.shields.io/badge/MMAA%20M1%20(2023)-PROJ802D1__MATH%20-lightgrey?style=for-the-badge&)](#projet_intro)
-
 
 <table>
    <thead>
@@ -38,9 +35,9 @@
 
 <br></br>
 
-| Environnements du <br /> développement et du partage | Systèmes d'exploitation | Langages de <br /> programmation | Logiciels d'affichage des .ppm |
-| :---: | :---: | :---: | :---: |
-| [![VScode](https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)](https://code.visualstudio.com/) [![CodeBlocks](https://img.shields.io/badge/Code::Blocks-0078D4?style=for-the-badge&color=<success>&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAESElEQVRo3u2ZS4gcVRSGv3Orqh%2BTicmYpCOZkEhEMAoiWYjgShEUcSckEB84I4FkIQQFcacrQUTB7KKiCwNRYxAhO9Fs3LhSxEVeBtMZe16Z9HTPTHd1Pe5x0T39HvKwJ6agDzR1u6g6df7zuPf%2B58JQ%2Fl%2BR7htXJiZQVTHGjCGyERGtPym3qjc0QTB7%2BO1Ju%2BNaMQdkAJUbGKJt9xSwqsRqy9Wgtug5Ll89s7%2FjPbf9T35yEozZQBi%2BYiuV1zWKcliLWgvaprp93F8McMGJ4gP%2F1FbKTnX5GPAkqrF2GaqrI20hEQQBRARXDGnHmcp4qeOOMacmz56ufvHUi70A8hMTiOdtiIrF96OZmSPR3JynQYCq1g2%2BsdHdUvZia34rzUtxYW47MN6hQTu93Y5AmkDAiCHruLty2dF927OjD4%2BlM%2B9OnD1d%2B7IBwl31vH%2FuHN7Ona8Gly8fCQsFD9VbTZse0diCWkJrb%2BWtrlyy%2BHFIKfAz1Th8A8Z%2Br0TB1y%2F%2F%2FA0nnj6AAbC%2BT2bv3nvDfH4ynJ72biPn17lQBQUKK%2BWRqZXSod0bN4%2BKmlYEaufPA4xGCwu520iVOyaxKjPV5T1%2FXp8dU1huAggLBe42r68l1Sg0F0sL0lnECTC8X7mvTneJliGAIYC7HoDWdwWJBCD1fVNyAYBirJJcAAomyREQAKvJLmKDTXYNrPK5ZKaQgqxzDbgAF8OQHqY3gPTPRDHkpyVaLEtjl267ntKbWEO6HW57AExFMcAC8CYwOggAAqVsHJe5dj2OiuX3VHVrQ69KpxFx%2FwCpaUVOjNJkmisNW9vXmmdXx07jOogIKITRc0d%2FYmwrrrZZqX2mW0dQ10BK6p2LEQOuoCMGtnngCjw0gm5y6%2FcBHntNGnzg1wJADjgG3DcAAAa4jOMfPecSbPdLHwGP9KRQp9i2H11XbbNpFngHmO9uq6SBJ4BdA6qvLUCqniLsAx4fkN48kL3Tu1FN5DQ65ANDAEMAQwBDAIMhNQndTtePKiS5XQnhDnRd1zeFpNmRSGgEtElZZF0qq8nIrgaAsjPnkU2bwX5lwKbbyCdcmu4EcGmqxlLFlkGu7hlP7XLM4FJIB9laVEuwVChUZv5YclKjrRSyVnlgPL3493RwPD8TVKwO5JPSh9P%2BJ4JXK035wWL%2Bs%2ByWB4tq41YEXnjrCj98eD%2FVmv320lSwd6Vqj%2B7Y5mWzacGIINI5nUhvKvbjk7iNs1S10U0uB9rjcVWLRj7B0nQtXJ75JKoWT9qwwoVTB3s1fv%2FBbqyS8RzZn07JYc%2BRcccBx9RBrJ7dtjP3TsObdhqUv7Jebf%2FzP57xN7nzJ0EfBbFrc5suKq6KaozaCI2jeY39T9VGJ0RM5cKpl1jTh2c%2B3o3nCH6gm%2BOYe1Qb3UFdi1pp%2F66ESDiSCmcnf%2FlcN5q5HGi6dSx%2Fo8lFWi4RI4hZEnGKqlYvfneQodxN8i%2Bqe9gfghND%2FQAAAABJRU5ErkJggg%3D%3D)](https://www.codeblocks.org/) [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/) | [![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://ubuntu.com/) [![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://fr.wikipedia.org/wiki/Microsoft_Windows) | [![VersionCPlusPlus](https://img.shields.io/badge/C++-v14-blue.svg?style=flat&logo=c%2B%2B)](https://fr.wikipedia.org/wiki/C%2B%2B) | [![GIMP](https://camo.githubusercontent.com/f522d49dfbd9c5dd3b5a495b13ec8359298eb598a1175478a5a848275b9b9cae/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f67696d702d3543353534333f7374796c653d666f722d7468652d6261646765266c6f676f3d67696d70266c6f676f436f6c6f723d7768697465)](https://www.gimp.org/) [![Krita](https://camo.githubusercontent.com/545f2175b21c3f9df7a9875edf7408cc84f9269f9ae660ed8968872dd19536ab/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4b726974612d3230333735393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b72697461266c6f676f436f6c6f723d454546333742)](https://krita.org/)| 
+[![VersionCPlusPlus](https://img.shields.io/badge/C++-v14-red.svg?style=flat&logo=c%2B%2B)](https://fr.wikipedia.org/wiki/C%2B%2B)
+
+[![GIMP ](https://camo.githubusercontent.com/f522d49dfbd9c5dd3b5a495b13ec8359298eb598a1175478a5a848275b9b9cae/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f67696d702d3543353534333f7374796c653d666f722d7468652d6261646765266c6f676f3d67696d70266c6f676f436f6c6f723d7768697465)](https://www.gimp.org/) 
 
 
 </div>
